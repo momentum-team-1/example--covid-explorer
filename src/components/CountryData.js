@@ -11,6 +11,17 @@ class CountryData extends React.Component {
   }
 
   componentDidMount () {
+    this.getCovidStats()
+  }
+
+  componentDidUpdate (prevProps) {
+    if (this.props.country.ISO2 !== prevProps.country.ISO2) {
+      this.setState({ cases: [] })
+      this.getCovidStats()
+    }
+  }
+
+  getCovidStats () {
     axios.get(`https://api.covid19api.com/total/dayone/country/${this.props.country.Slug}/status/confirmed`)
       .then(response => {
         this.setState({ cases: response.data })
