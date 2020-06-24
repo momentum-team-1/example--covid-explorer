@@ -1,7 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 import './App.css'
-import CountryData from './components/CountryData'
+import CountrySelector from './components/CountrySelector'
 import CountryDayWalkthrough from './components/CountryDayWalkthrough'
 
 class App extends React.Component {
@@ -46,16 +46,10 @@ class App extends React.Component {
 
     return (
       <div className='App'>
-        <div>
-          <select
-            value={currentCountryCode} onChange={event => this.handleCountryCodeChange(event)}
-          >
-            <option value=''>-- No country selected --</option>
-            {countries.map(country => (
-              <option value={country.ISO2} key={country.ISO2}>{country.Country}</option>
-            ))}
-          </select>
-        </div>
+        <CountrySelector
+          countries={countries} currentCountryCode={currentCountryCode}
+          onSelect={event => this.setCountryCode(event.target.value)}
+        />
         {
           currentCountry &&
             <CountryDayWalkthrough country={currentCountry} handleClearCountry={() => this.setCountryCode('')} />

@@ -44,7 +44,7 @@ class CountryDayWalkthrough extends React.Component {
 
   componentDidUpdate (prevProps) {
     if (this.props.country.ISO2 !== prevProps.country.ISO2) {
-      this.setState({ cases: [] })
+      this.setState({ cases: [], currentDayIdx: 0 })
       this.getCovidStats()
     }
   }
