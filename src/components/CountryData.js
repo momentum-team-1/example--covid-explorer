@@ -1,11 +1,13 @@
 import React from 'react'
 import axios from 'axios'
 import moment from 'moment'
+import { Link } from 'react-router-dom'
 
 class CountryData extends React.Component {
   constructor () {
     super()
     this.state = {
+      retrievedCases: false,
       cases: []
     }
   }
@@ -14,37 +16,43 @@ class CountryData extends React.Component {
     this.getCovidStats()
   }
 
-  componentDidUpdate (prevProps) {
-    if (this.props.country.ISO2 !== prevProps.country.ISO2) {
-      this.setState({ cases: [] })
-      this.getCovidStats()
-    }
+  componentDidUpdate () {
+    this.getCovidStats()
   }
 
   getCovidStats () {
-    axios.get(`https://api.covid19api.com/total/dayone/country/${this.props.country.Slug}/status/confirmed`)
-      .then(response => {
-        this.setState({ cases: response.data })
-      })
+    const { country } = this.props
+    const { retrievedCases } = this.state
+    if (country && !retrievedCases) {
+      axios.get(`https://api.covid19api.com/total/dayone/country/${country.Slug}/status/confirmed`)
+        .then(response => {
+          this.setState({ cases: response.data, retrievedCases: true })
+        })
+    }
   }
 
   render () {
-    const { country, handleClearCountry } = this.props
+    const { country } = this.props
     const { cases } = this.state
 
-    return (
-      <div className='CountryData'>
-        <h1>{country.Country}</h1>
-        <p><a href='#' onClick={handleClearCountry}>Go back to all countries</a></p>
-        <ul>
-          {cases.map(caseDate => (
-            <li key={caseDate.Date}>
-              {moment(caseDate.Date).format('MMMM Do YYYY')}: {caseDate.Cases}
-            </li>
-          ))}
-        </ul>
-      </div>
-    )
+    if (country) {
+      return (
+        <div className='CountryData'>
+          <h1>{country.Country}</h1>
+          <Link to='/'>Back to all countries</Link>
+          <p />
+          <ul>
+            {cases.map(caseDate => (
+              <li key={caseDate.Date}>
+                {moment(caseDate.Date).format('MMMM Do YYYY')}: {caseDate.Cases}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    } else {
+      return <div />
+    }
   }
 }
 
